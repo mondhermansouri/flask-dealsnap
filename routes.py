@@ -69,7 +69,40 @@ def click_deal(deal_id):
     db.session.add(click_event)
     db.session.commit()
     
-    return redirect(deal.affiliate_url)
+    # Create a redirect page that opens in new window to avoid iframe restrictions
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Redirection vers {deal.title}</title>
+        <meta charset="UTF-8">
+        <script>
+            // Open in new window/tab to avoid iframe restrictions
+            window.open('{deal.affiliate_url}', '_blank');
+            // Close current window if it was opened by JavaScript
+            setTimeout(function() {{
+                window.close();
+                // If we can't close, redirect in current window as fallback
+                window.location.href = '{deal.affiliate_url}';
+            }}, 1000);
+        </script>
+        <style>
+            body {{ font-family: Arial, sans-serif; text-align: center; padding: 50px; }}
+            .container {{ max-width: 500px; margin: 0 auto; }}
+            .spinner {{ border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 20px auto; }}
+            @keyframes spin {{ 0% {{ transform: rotate(0deg); }} 100% {{ transform: rotate(360deg); }} }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="spinner"></div>
+            <h2>Redirection en cours...</h2>
+            <p>Vous allez être redirigé vers <strong>{deal.title}</strong></p>
+            <p>Si la redirection ne fonctionne pas automatiquement, <a href="{deal.affiliate_url}" target="_blank">cliquez ici</a></p>
+        </div>
+    </body>
+    </html>
+    """
 
 @app.route('/admin')
 def admin():

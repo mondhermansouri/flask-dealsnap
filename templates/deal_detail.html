@@ -82,6 +82,7 @@
             
             <div class="action-buttons mb-4">
                 <a href="{{ url_for('click_deal', deal_id=deal.id) }}" 
+                   target="_blank"
                    class="btn btn-warning btn-lg me-3">
                     <i class="fas fa-shopping-cart me-2"></i>Get This Deal
                 </a>
@@ -134,6 +135,7 @@
                                     <i class="fas fa-info-circle me-1"></i>Details
                                 </a>
                                 <a href="{{ url_for('click_deal', deal_id=related_deal.id) }}" 
+                                   target="_blank"
                                    class="btn btn-warning btn-sm flex-grow-1">
                                     <i class="fas fa-shopping-cart me-1"></i>Get Deal
                                 </a>
