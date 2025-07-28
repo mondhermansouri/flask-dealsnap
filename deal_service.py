@@ -113,6 +113,7 @@ class DealService:
         
         # Clear existing sample deals
         Deal.query.filter_by(source='sample').delete()
+        Deal.query.filter_by(source='amazon').delete()
         
         for deal_data in sample_deals:
             # Calculate discount percentage
@@ -120,18 +121,37 @@ class DealService:
                 discount = int(((deal_data['original_price'] - deal_data['price']) / deal_data['original_price']) * 100)
                 deal_data['discount_percentage'] = discount
             
-            # Generate AI headline
+            # Generate AI headline with fallback to pre-defined catchy headlines
+            predefined_headlines = {
+                'Apple AirPods Pro (2nd Generation)': '🔥 AirPods Pro 2nd Gen - 20% OFF! Premium Sound, Unbeatable Price!',
+                'Samsung Galaxy S24 Ultra 256GB': '⚡ Galaxy S24 Ultra FLASH SALE! Save $200 on the Ultimate Smartphone!',
+                'MacBook Air M3 13-inch 256GB': '✨ MacBook Air M3 - $200 OFF! Lightning Fast Performance!',
+                'Sony WH-1000XM5 Wireless Headphones': '🎧 Sony WH-1000XM5 - Industry Leading Noise Cancelling DEAL!',
+                'iPad Pro 11-inch M4 256GB': '💥 iPad Pro M4 - Creative Powerhouse! Limited Time $100 OFF!',
+                'ASUS ROG Strix Gaming Laptop': '🎮 ROG Strix Gaming Beast - $200 OFF! RTX 4060 Performance!',
+                'Amazon Echo Dot (5th Gen)': '🏠 Echo Dot 5th Gen - Smart Home Essential! 20% OFF Today!',
+                'Anker PowerCore 10000 Portable Charger': '🔋 Anker PowerCore 10K - Never Run Out of Power! 33% OFF!'
+            }
+            
             try:
-                ai_headline = self.ai_service.generate_deal_headline(
-                    deal_data['title'],
-                    deal_data['price'],
-                    deal_data.get('original_price'),
-                    deal_data['category']
-                )
-                deal_data['ai_headline'] = ai_headline
+                # Use predefined headline if available, otherwise try AI generation
+                if deal_data['title'] in predefined_headlines:
+                    deal_data['ai_headline'] = predefined_headlines[deal_data['title']]
+                else:
+                    ai_headline = self.ai_service.generate_deal_headline(
+                        deal_data['title'],
+                        deal_data['price'],
+                        deal_data.get('original_price'),
+                        deal_data['category']
+                    )
+                    deal_data['ai_headline'] = ai_headline
             except Exception as e:
                 logging.warning(f"Failed to generate AI headline for {deal_data['title']}: {e}")
-                deal_data['ai_headline'] = f"🔥 Great Deal on {deal_data['title']}!"
+                # Create engaging fallback based on discount
+                discount_text = ""
+                if deal_data.get('discount_percentage'):
+                    discount_text = f" - {deal_data['discount_percentage']}% OFF!"
+                deal_data['ai_headline'] = f"🔥 Amazing Deal: {deal_data['title']}{discount_text}"
             
             # Set expiration date (7 days from now)
             deal_data['expires_at'] = datetime.utcnow() + timedelta(days=7)
