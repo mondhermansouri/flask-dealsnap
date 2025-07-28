@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}{{ deal.title }} - DealSnap{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Deal Detail -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            {% if deal.image_url %}
+            <img src="{{ deal.image_url }}" class="img-fluid rounded shadow" alt="{{ deal.title }}">
+            {% else %}
+            <div class="placeholder-image-large d-flex align-items-center justify-content-center rounded shadow">
+                <i class="fas fa-image fa-5x text-muted"></i>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-6">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('index', category=deal.category) }}">{{ deal.category.title() }}</a></li>
+                    <li class="breadcrumb-item active">{{ deal.title[:30] }}...</li>
+                </ol>
+            </nav>
+            
+            <h1 class="display-6">{{ deal.ai_headline or deal.title }}</h1>
+            
+            <div class="price-section-large mb-4">
+                <span class="current-price-large">${{ "%.2f"|format(deal.price) }}</span>
+                {% if deal.original_price and deal.original_price > deal.price %}
+                <span class="original-price-large">${{ "%.2f"|format(deal.original_price) }}</span>
+                <span class="discount-badge-large">{{ deal.discount_percentage }}% OFF</span>
+                {% endif %}
+            </div>
+            
+            {% if deal.rating %}
+            <div class="rating-section mb-3">
+                <div class="d-flex align-items-center">
+                    <span class="text-warning me-2">
+                        {% for i in range(5) %}
+                            {% if i < deal.rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                    <span class="rating-number">{{ deal.rating }}/5</span>
+                    <span class="text-muted ms-2">({{ deal.num_reviews or 0 }} reviews)</span>
+                </div>
+            </div>
+            {% endif %}
+            
+            <p class="lead">{{ deal.description }}</p>
+            
+            <div class="deal-meta mb-4">
+                <div class="row">
+                    <div class="col-6">
+                        <small class="text-muted">
+                            <i class="fas fa-tag me-1"></i>Category: 
+                            <span class="badge bg-secondary">{{ deal.category }}</span>
+                        </small>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted">
+                            <i class="fas fa-store me-1"></i>Source: {{ deal.source.title() }}
+                        </small>
+                    </div>
+                </div>
+                {% if deal.expires_at %}
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <small class="text-danger">
+                            <i class="fas fa-clock me-1"></i>Expires: {{ deal.expires_at.strftime('%B %d, %Y at %I:%M %p') }}
+                        </small>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="action-buttons mb-4">
+                <a href="{{ url_for('click_deal', deal_id=deal.id) }}" 
+                   class="btn btn-warning btn-lg me-3">
+                    <i class="fas fa-shopping-cart me-2"></i>Get This Deal
+                </a>
+                <button class="btn btn-outline-secondary" onclick="shareDeal()">
+                    <i class="fas fa-share me-2"></i>Share
+                </button>
+            </div>
+            
+            <div class="deal-stats">
+                <small class="text-muted">
+                    <i class="fas fa-eye me-1"></i>{{ deal.views }} views
+                    <i class="fas fa-mouse-pointer ms-3 me-1"></i>{{ deal.clicks }} clicks
+                    <i class="fas fa-calendar ms-3 me-1"></i>Added {{ deal.created_at.strftime('%B %d, %Y') }}
+                </small>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related Deals -->
+    {% if related_deals %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3>More {{ deal.category.title() }} Deals</h3>
+            <div class="row">
+                {% for related_deal in related_deals %}
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                    <div class="card deal-card h-100">
+                        {% if related_deal.image_url %}
+                        <img src="{{ related_deal.image_url }}" class="card-img-top deal-image" alt="{{ related_deal.title }}">
+                        {% else %}
+                        <div class="placeholder-image card-img-top d-flex align-items-center justify-content-center">
+                            <i class="fas fa-image fa-2x text-muted"></i>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title">{{ related_deal.ai_headline or related_deal.title }}</h6>
+                            
+                            <div class="price-section mb-3 mt-auto">
+                                <span class="current-price">${{ "%.2f"|format(related_deal.price) }}</span>
+                                {% if related_deal.original_price and related_deal.original_price > related_deal.price %}
+                                <span class="original-price">${{ "%.2f"|format(related_deal.original_price) }}</span>
+                                <span class="discount-badge">{{ related_deal.discount_percentage }}% OFF</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('deal_detail', deal_id=related_deal.id) }}" 
+                                   class="btn btn-outline-primary btn-sm flex-grow-1">
+                                    <i class="fas fa-info-circle me-1"></i>Details
+                                </a>
+                                <a href="{{ url_for('click_deal', deal_id=related_deal.id) }}" 
+                                   class="btn btn-warning btn-sm flex-grow-1">
+                                    <i class="fas fa-shopping-cart me-1"></i>Get Deal
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function shareDeal() {
+    if (navigator.share) {
+        navigator.share({
+            title: '{{ deal.ai_headline or deal.title }}',
+            text: 'Check out this amazing deal on DealSnap!',
+            url: window.location.href
+        }).catch(console.error);
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            alert('Deal link copied to clipboard!');
+        });
+    }
+}
+</script>
+{% endblock %}

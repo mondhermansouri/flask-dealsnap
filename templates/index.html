@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Hero Section -->
+    {% if featured_deals %}
+    <div class="hero-section mb-5">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="display-5 fw-bold text-center mb-4">
+                    <i class="fas fa-fire text-warning"></i> Today's Hottest Deals
+                </h1>
+            </div>
+        </div>
+        
+        <!-- Featured Deals Carousel -->
+        <div id="featuredCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for deal in featured_deals %}
+                <div class="carousel-item {% if loop.first %}active{% endif %}">
+                    <div class="card deal-card-featured mx-auto" style="max-width: 800px;">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                {% if deal.image_url %}
+                                <img src="{{ deal.image_url }}" class="img-fluid rounded-start h-100 object-fit-cover" alt="{{ deal.title }}">
+                                {% else %}
+                                <div class="placeholder-image d-flex align-items-center justify-content-center h-100">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ deal.ai_headline or deal.title }}</h5>
+                                    <p class="card-text">{{ deal.description[:100] }}...</p>
+                                    <div class="price-section mb-3">
+                                        <span class="current-price">${{ "%.2f"|format(deal.price) }}</span>
+                                        {% if deal.original_price and deal.original_price > deal.price %}
+                                        <span class="original-price">${{ "%.2f"|format(deal.original_price) }}</span>
+                                        <span class="discount-badge">{{ deal.discount_percentage }}% OFF</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="rating">
+                                            {% if deal.rating %}
+                                            <span class="text-warning">
+                                                {% for i in range(5) %}
+                                                    {% if i < deal.rating %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </span>
+                                            <small class="text-muted">({{ deal.num_reviews or 0 }} reviews)</small>
+                                            {% endif %}
+                                        </div>
+                                        <a href="{{ url_for('click_deal', deal_id=deal.id) }}" 
+                                           class="btn btn-warning btn-lg">
+                                            <i class="fas fa-shopping-cart me-2"></i>Get Deal
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% if featured_deals|length > 1 %}
+            <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Category Filter -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="category-filter">
+                <h5 class="mb-3">Browse by Category:</h5>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for category in categories %}
+                    <a href="{{ url_for('index', category=category) }}" 
+                       class="btn btn-category {% if current_category == category %}active{% endif %}">
+                        {% if category == 'all' %}
+                            <i class="fas fa-th-large me-2"></i>All Deals
+                        {% elif category == 'smartphones' %}
+                            <i class="fas fa-mobile-alt me-2"></i>Smartphones
+                        {% elif category == 'laptops' %}
+                            <i class="fas fa-laptop me-2"></i>Laptops
+                        {% elif category == 'headphones' %}
+                            <i class="fas fa-headphones me-2"></i>Headphones
+                        {% elif category == 'gaming' %}
+                            <i class="fas fa-gamepad me-2"></i>Gaming
+                        {% elif category == 'smart-home' %}
+                            <i class="fas fa-home me-2"></i>Smart Home
+                        {% elif category == 'accessories' %}
+                            <i class="fas fa-plug me-2"></i>Accessories
+                        {% else %}
+                            <i class="fas fa-microchip me-2"></i>Electronics
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deals Grid -->
+    <div class="row">
+        {% if deals %}
+            {% for deal in deals %}
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="card deal-card h-100">
+                    {% if deal.image_url %}
+                    <img src="{{ deal.image_url }}" class="card-img-top deal-image" alt="{{ deal.title }}">
+                    {% else %}
+                    <div class="placeholder-image card-img-top d-flex align-items-center justify-content-center">
+                        <i class="fas fa-image fa-2x text-muted"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="card-title">{{ deal.ai_headline or deal.title }}</h6>
+                        <p class="card-text flex-grow-1">{{ deal.description[:80] }}...</p>
+                        
+                        <div class="price-section mb-3">
+                            <span class="current-price">${{ "%.2f"|format(deal.price) }}</span>
+                            {% if deal.original_price and deal.original_price > deal.price %}
+                            <span class="original-price">${{ "%.2f"|format(deal.original_price) }}</span>
+                            <span class="discount-badge">{{ deal.discount_percentage }}% OFF</span>
+                            {% endif %}
+                        </div>
+                        
+                        {% if deal.rating %}
+                        <div class="rating mb-2">
+                            <span class="text-warning">
+                                {% for i in range(5) %}
+                                    {% if i < deal.rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                            <small class="text-muted">({{ deal.num_reviews or 0 }})</small>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('deal_detail', deal_id=deal.id) }}" 
+                               class="btn btn-outline-primary btn-sm flex-grow-1">
+                                <i class="fas fa-info-circle me-1"></i>Details
+                            </a>
+                            <a href="{{ url_for('click_deal', deal_id=deal.id) }}" 
+                               class="btn btn-warning btn-sm flex-grow-1">
+                                <i class="fas fa-shopping-cart me-1"></i>Get Deal
+                            </a>
+                        </div>
+                        
+                        <small class="text-muted mt-2">
+                            <i class="fas fa-eye me-1"></i>{{ deal.views }} views
+                            <i class="fas fa-mouse-pointer ms-2 me-1"></i>{{ deal.clicks }} clicks
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4>No deals found</h4>
+                    <p class="text-muted">Try checking a different category or check back later for new deals!</p>
+                    <a href="{{ url_for('admin') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add Sample Deals
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

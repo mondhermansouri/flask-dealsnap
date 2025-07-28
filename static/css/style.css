@@ -1,0 +1,265 @@
+/* DealSnap Custom Styles */
+
+:root {
+    --primary-color: #0d6efd;
+    --warning-color: #ffc107;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --dark-color: #212529;
+    --light-color: #f8f9fa;
+    --border-radius: 8px;
+}
+
+/* General */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+/* Deal Cards */
+.deal-card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.deal-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.deal-card-featured {
+    border: 2px solid var(--warning-color);
+    box-shadow: 0 4px 16px rgba(255,193,7,0.3);
+}
+
+.deal-image {
+    height: 200px;
+    object-fit: cover;
+}
+
+.placeholder-image {
+    height: 200px;
+    background-color: #e9ecef;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.placeholder-image-large {
+    height: 400px;
+    background-color: #e9ecef;
+}
+
+/* Price Display */
+.price-section {
+    margin-bottom: 1rem;
+}
+
+.current-price {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--success-color);
+}
+
+.current-price-large {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--success-color);
+}
+
+.original-price, .original-price-large {
+    font-size: 1rem;
+    color: #6c757d;
+    text-decoration: line-through;
+    margin-left: 0.5rem;
+}
+
+.discount-badge {
+    background-color: var(--danger-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-left: 0.5rem;
+}
+
+.discount-badge-large {
+    background-color: var(--danger-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-left: 1rem;
+}
+
+/* Category Filter */
+.category-filter {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.btn-category {
+    background: #e9ecef;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    transition: all 0.2s ease;
+}
+
+.btn-category:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.btn-category.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-color), #0056b3);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    color: white;
+    margin-bottom: 2rem;
+}
+
+/* Rating */
+.rating-section .rating-number {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Carousel customization */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+}
+
+/* Analytics Cards */
+.card {
+    border-radius: var(--border-radius);
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .display-5, .display-6 {
+        font-size: 2rem;
+    }
+    
+    .hero-section {
+        padding: 1rem;
+    }
+    
+    .current-price-large {
+        font-size: 1.5rem;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .category-filter .d-flex {
+        justify-content: center;
+    }
+    
+    .btn-category {
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .deal-card .card-body {
+        padding: 1rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .deal-card {
+        margin-bottom: 1rem;
+    }
+    
+    .btn-group-vertical .btn {
+        margin-bottom: 0.5rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+}
+
+/* PWA Specific Styles */
+@media (display-mode: standalone) {
+    .navbar {
+        padding-top: env(safe-area-inset-top);
+    }
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Focus styles for accessibility */
+.btn:focus,
+.card:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}

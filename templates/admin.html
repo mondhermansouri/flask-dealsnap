@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - DealSnap{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="display-6 mb-4">
+                <i class="fas fa-cog text-primary me-3"></i>Admin Dashboard
+            </h1>
+        </div>
+    </div>
+
+    <!-- Analytics Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ analytics.total_deals }}</h4>
+                            <p class="card-text">Total Deals</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-tags fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ analytics.active_deals }}</h4>
+                            <p class="card-text">Active Deals</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ analytics.total_views }}</h4>
+                            <p class="card-text">Total Views</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-eye fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ analytics.total_clicks }}</h4>
+                            <p class="card-text">Total Clicks</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-mouse-pointer fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTR Card -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card border-secondary">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Click-Through Rate</h5>
+                    <h2 class="text-secondary">{{ "%.2f"|format(analytics.ctr) }}%</h2>
+                    <p class="text-muted">Clicks / Views ratio</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-3 mb-3">
+                        <a href="{{ url_for('generate_sample_deals') }}" class="btn btn-success">
+                            <i class="fas fa-plus me-2"></i>Generate Sample Deals
+                        </a>
+                        <a href="{{ url_for('regenerate_headlines') }}" class="btn btn-info">
+                            <i class="fas fa-magic me-2"></i>Regenerate AI Headlines
+                        </a>
+                        <a href="{{ url_for('api_deals') }}" class="btn btn-secondary" target="_blank">
+                            <i class="fas fa-code me-2"></i>View API
+                        </a>
+                    </div>
+                    
+                    <!-- Scrape Deal Form -->
+                    <div class="row">
+                        <div class="col-md-8">
+                            <form method="POST" action="{{ url_for('scrape_deal') }}" class="d-flex gap-2 align-items-end">
+                                <div class="flex-grow-1">
+                                    <label for="scrape-url" class="form-label">Add Deal from URL</label>
+                                    <input type="url" class="form-control" id="scrape-url" name="url" 
+                                           placeholder="https://amazon.com/dp/..." required>
+                                    <small class="form-text text-muted">Paste any Amazon, Best Buy, or Newegg product URL</small>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="featured" name="featured">
+                                    <label class="form-check-label" for="featured">Featured</label>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-download me-2"></i>Scrape Deal
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deals Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">All Deals</h5>
+                </div>
+                <div class="card-body">
+                    {% if deals %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>AI Headline</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Views</th>
+                                    <th>Clicks</th>
+                                    <th>CTR</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for deal in deals %}
+                                <tr>
+                                    <td>{{ deal.id }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if deal.image_url %}
+                                            <img src="{{ deal.image_url }}" class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                            {% endif %}
+                                            <div>
+                                                <strong>{{ deal.title[:30] }}{% if deal.title|length > 30 %}...{% endif %}</strong>
+                                                {% if deal.featured %}
+                                                <span class="badge bg-warning ms-2">Featured</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <small>{{ deal.ai_headline[:40] }}{% if deal.ai_headline and deal.ai_headline|length > 40 %}...{% endif %}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ deal.category }}</span>
+                                    </td>
+                                    <td>
+                                        <strong>${{ "%.2f"|format(deal.price) }}</strong>
+                                        {% if deal.original_price and deal.original_price > deal.price %}
+                                        <br><small class="text-muted text-decoration-line-through">${{ "%.2f"|format(deal.original_price) }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ deal.views }}</td>
+                                    <td>{{ deal.clicks }}</td>
+                                    <td>
+                                        {% if deal.views > 0 %}
+                                        {{ "%.1f"|format((deal.clicks / deal.views) * 100) }}%
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if deal.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small>{{ deal.created_at.strftime('%m/%d/%Y') }}</small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <h5>No deals found</h5>
+                        <p class="text-muted">Click "Generate Sample Deals" to get started!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
