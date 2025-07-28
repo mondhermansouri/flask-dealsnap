@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Deal - DealSnap Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-plus-circle me-2"></i>Add New Deal</h2>
+                <a href="{{ url_for('admin') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Admin
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <form method="POST" enctype="multipart/form-data">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Deal Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="title" class="form-label">Product Title *</label>
+                                <input type="text" class="form-control" id="title" name="title" required 
+                                       placeholder="e.g., Apple AirPods Pro (2nd Generation)">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="ai_headline" class="form-label">Custom Headline (Optional)</label>
+                                <input type="text" class="form-control" id="ai_headline" name="ai_headline" 
+                                       placeholder="🔥 AirPods Pro 2nd Gen - 20% OFF! Premium Sound, Unbeatable Price!">
+                                <small class="form-text text-muted">Leave empty to auto-generate with AI</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="description" class="form-label">Description *</label>
+                                <textarea class="form-control" id="description" name="description" rows="3" required
+                                          placeholder="Detailed product description..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="price" class="form-label">Current Price ($) *</label>
+                                <input type="number" step="0.01" class="form-control" id="price" name="price" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="original_price" class="form-label">Original Price ($)</label>
+                                <input type="number" step="0.01" class="form-control" id="original_price" name="original_price">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="discount_percentage" class="form-label">Discount %</label>
+                                <input type="number" class="form-control" id="discount_percentage" name="discount_percentage" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="category" class="form-label">Category *</label>
+                                <select class="form-control" id="category" name="category" required>
+                                    <option value="">Select Category</option>
+                                    <option value="smartphones">Smartphones</option>
+                                    <option value="laptops">Laptops</option>
+                                    <option value="headphones">Headphones</option>
+                                    <option value="gaming">Gaming</option>
+                                    <option value="smart-home">Smart Home</option>
+                                    <option value="accessories">Accessories</option>
+                                    <option value="electronics">Electronics</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="source" class="form-label">Source *</label>
+                                <select class="form-control" id="source" name="source" required>
+                                    <option value="">Select Source</option>
+                                    <option value="amazon">Amazon</option>
+                                    <option value="bestbuy">Best Buy</option>
+                                    <option value="newegg">Newegg</option>
+                                    <option value="ebay">eBay</option>
+                                    <option value="walmart">Walmart</option>
+                                    <option value="target">Target</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="affiliate_url" class="form-label">Affiliate URL *</label>
+                                <input type="url" class="form-control" id="affiliate_url" name="affiliate_url" required
+                                       placeholder="https://amazon.com/dp/...">
+                                <small class="form-text text-muted">Your affiliate link for earning commissions</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="image_url" class="form-label">Product Image URL</label>
+                                <input type="url" class="form-control" id="image_url" name="image_url"
+                                       placeholder="https://example.com/product-image.jpg">
+                                <small class="form-text text-muted">Direct link to product image</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="rating" class="form-label">Rating (1-5)</label>
+                                <input type="number" step="0.1" min="1" max="5" class="form-control" id="rating" name="rating">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="num_reviews" class="form-label">Number of Reviews</label>
+                                <input type="number" class="form-control" id="num_reviews" name="num_reviews">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="expires_at" class="form-label">Deal Expires</label>
+                                <input type="datetime-local" class="form-control" id="expires_at" name="expires_at">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="featured" name="featured">
+                                    <label class="form-check-label" for="featured">
+                                        Mark as Featured Deal
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_active" name="is_active" checked>
+                                    <label class="form-check-label" for="is_active">
+                                        Active (visible to users)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Preview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="deal-preview" class="row">
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <img id="preview-image" src="https://via.placeholder.com/300x200?text=Product+Image" 
+                                         class="card-img-top" alt="Product Preview">
+                                    <div class="card-body">
+                                        <h6 id="preview-title" class="card-title">Product Title</h6>
+                                        <p id="preview-description" class="card-text">Product description...</p>
+                                        <div class="price-section">
+                                            <span id="preview-price" class="current-price">$0.00</span>
+                                            <span id="preview-original-price" class="original-price" style="display:none;">$0.00</span>
+                                            <span id="preview-discount" class="discount-badge" style="display:none;">0% OFF</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mt-4">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-save me-2"></i>Save Deal
+                    </button>
+                    <a href="{{ url_for('admin') }}" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Tips</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                            Use compelling titles with specific model numbers
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-percentage text-success me-2"></i>
+                            Enter original price to automatically calculate discount
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-image text-info me-2"></i>
+                            Use high-quality product images (300x200 minimum)
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-star text-warning me-2"></i>
+                            Include ratings and reviews for better conversion
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-clock text-danger me-2"></i>
+                            Set expiration dates for urgency
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Affiliate Programs</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="https://affiliate-program.amazon.com/" target="_blank" class="list-group-item list-group-item-action">
+                            <i class="fab fa-amazon me-2"></i>Amazon Associates
+                        </a>
+                        <a href="https://affiliate.bestbuy.com/" target="_blank" class="list-group-item list-group-item-action">
+                            <i class="fas fa-store me-2"></i>Best Buy Affiliate
+                        </a>
+                        <a href="https://www.newegg.com/promotions/affiliate/" target="_blank" class="list-group-item list-group-item-action">
+                            <i class="fas fa-microchip me-2"></i>Newegg Affiliate
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Real-time preview updates
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const inputs = form.querySelectorAll('input, select, textarea');
+    
+    inputs.forEach(input => {
+        input.addEventListener('input', updatePreview);
+    });
+    
+    function updatePreview() {
+        const title = document.getElementById('title').value || 'Product Title';
+        const description = document.getElementById('description').value || 'Product description...';
+        const price = parseFloat(document.getElementById('price').value) || 0;
+        const originalPrice = parseFloat(document.getElementById('original_price').value) || 0;
+        const imageUrl = document.getElementById('image_url').value;
+        
+        document.getElementById('preview-title').textContent = title;
+        document.getElementById('preview-description').textContent = description.substring(0, 80) + '...';
+        document.getElementById('preview-price').textContent = '$' + price.toFixed(2);
+        
+        if (imageUrl) {
+            document.getElementById('preview-image').src = imageUrl;
+        }
+        
+        if (originalPrice > price && originalPrice > 0) {
+            const discount = Math.round(((originalPrice - price) / originalPrice) * 100);
+            document.getElementById('preview-original-price').style.display = 'inline';
+            document.getElementById('preview-original-price').textContent = '$' + originalPrice.toFixed(2);
+            document.getElementById('preview-discount').style.display = 'inline';
+            document.getElementById('preview-discount').textContent = discount + '% OFF';
+            document.getElementById('discount_percentage').value = discount;
+        } else {
+            document.getElementById('preview-original-price').style.display = 'none';
+            document.getElementById('preview-discount').style.display = 'none';
+            document.getElementById('discount_percentage').value = '';
+        }
+    }
+    
+    // Auto-calculate discount when prices change
+    document.getElementById('price').addEventListener('input', updatePreview);
+    document.getElementById('original_price').addEventListener('input', updatePreview);
+});
+</script>
+{% endblock %}

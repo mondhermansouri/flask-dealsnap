@@ -101,11 +101,14 @@
                 </div>
                 <div class="card-body">
                     <div class="d-flex flex-wrap gap-3 mb-3">
+                        <a href="{{ url_for('add_deal') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Add Deal Manually
+                        </a>
                         <a href="{{ url_for('generate_sample_deals') }}" class="btn btn-success">
-                            <i class="fas fa-plus me-2"></i>Generate Sample Deals
+                            <i class="fas fa-magic me-2"></i>Generate Sample Deals
                         </a>
                         <a href="{{ url_for('regenerate_headlines') }}" class="btn btn-info">
-                            <i class="fas fa-magic me-2"></i>Regenerate AI Headlines
+                            <i class="fas fa-sparkles me-2"></i>Regenerate AI Headlines
                         </a>
                         <a href="{{ url_for('api_deals') }}" class="btn btn-secondary" target="_blank">
                             <i class="fas fa-code me-2"></i>View API

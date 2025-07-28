@@ -4,6 +4,7 @@ from models import Deal, ClickEvent
 from deal_service import DealService
 from ai_service import AIService
 from scraper_service import ScraperService
+from datetime import datetime
 import logging
 
 deal_service = DealService()
@@ -180,6 +181,84 @@ def scrape_deal():
         flash(f'Error scraping deal: {str(e)}', 'error')
     
     return redirect(url_for('admin'))
+
+@app.route('/admin/add-deal', methods=['GET', 'POST'])
+def add_deal():
+    """Add deal manually"""
+    if request.method == 'GET':
+        return render_template('add_deal.html')
+    
+    try:
+        # Get form data
+        title = request.form.get('title')
+        ai_headline = request.form.get('ai_headline')
+        description = request.form.get('description')
+        price = float(request.form.get('price', 0))
+        original_price_str = request.form.get('original_price')
+        original_price = float(original_price_str) if original_price_str else None
+        category = request.form.get('category')
+        source = request.form.get('source')
+        affiliate_url = request.form.get('affiliate_url')
+        image_url = request.form.get('image_url')
+        rating_str = request.form.get('rating')
+        rating = float(rating_str) if rating_str else None
+        num_reviews_str = request.form.get('num_reviews')
+        num_reviews = int(num_reviews_str) if num_reviews_str else None
+        expires_at_str = request.form.get('expires_at')
+        expires_at = datetime.strptime(expires_at_str, '%Y-%m-%dT%H:%M') if expires_at_str else None
+        featured = 'featured' in request.form
+        is_active = 'is_active' in request.form
+        
+        # Calculate discount percentage
+        discount_percentage = None
+        if original_price and original_price > price:
+            discount_percentage = int(((original_price - price) / original_price) * 100)
+        
+        # Create deal
+        deal = Deal(
+            title=title,
+            description=description,
+            price=price,
+            original_price=original_price,
+            discount_percentage=discount_percentage,
+            affiliate_url=affiliate_url,
+            image_url=image_url,
+            category=category,
+            source=source,
+            rating=rating,
+            num_reviews=num_reviews,
+            expires_at=expires_at,
+            featured=featured,
+            is_active=is_active
+        )
+        
+        # Generate AI headline if not provided
+        if ai_headline:
+            deal.ai_headline = ai_headline
+        else:
+            try:
+                ai_headline = ai_service.generate_deal_headline(
+                    deal.title,
+                    deal.price,
+                    deal.original_price,
+                    deal.category
+                )
+                deal.ai_headline = ai_headline
+            except Exception as e:
+                logging.warning(f"Failed to generate AI headline: {e}")
+                discount_text = f" - {discount_percentage}% OFF!" if discount_percentage else ""
+                deal.ai_headline = f"🔥 Amazing Deal: {deal.title}{discount_text}"
+        
+        db.session.add(deal)
+        db.session.commit()
+        
+        flash(f'Deal "{deal.title}" added successfully!', 'success')
+        return redirect(url_for('admin'))
+        
+    except Exception as e:
+        logging.error(f"Error adding deal: {e}")
+        flash(f'Error adding deal: {str(e)}', 'error')
+        return render_template('add_deal.html')
 
 # API Routes
 @app.route('/api/deals')
