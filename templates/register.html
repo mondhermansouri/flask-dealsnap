@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Créer un compte - DealSnap Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg mt-5">
+                <div class="card-header bg-success text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>Créer un compte Admin
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{% if category == 'error' %}danger{% elif category == 'success' %}success{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">
+                                <i class="fas fa-user me-2"></i>Nom d'utilisateur *
+                            </label>
+                            <input type="text" class="form-control" id="username" name="username" required 
+                                   placeholder="Choisissez un nom d'utilisateur" autofocus>
+                            <div class="form-text">Au moins 3 caractères</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-2"></i>Adresse e-mail *
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" required 
+                                   placeholder="votre@email.com">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-key me-2"></i>Mot de passe *
+                            </label>
+                            <input type="password" class="form-control" id="password" name="password" required 
+                                   placeholder="Créez un mot de passe sécurisé" minlength="6">
+                            <div class="form-text">Au moins 6 caractères</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">
+                                <i class="fas fa-lock me-2"></i>Confirmer le mot de passe *
+                            </label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required 
+                                   placeholder="Répétez votre mot de passe" minlength="6">
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    J'accepte d'être administrateur de cette instance DealSnap *
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Créer le compte
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <small class="text-muted">
+                            Déjà un compte ? 
+                            <a href="{{ url_for('login') }}" class="text-success">Se connecter</a>
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer text-center text-muted">
+                    <small>
+                        <i class="fas fa-shield-alt me-1"></i>
+                        Création du premier compte administrateur
+                    </small>
+                </div>
+            </div>
+
+            <!-- Security Notice -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h6 class="card-title text-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Notice de sécurité
+                    </h6>
+                    <ul class="small text-muted mb-0">
+                        <li>Seul le premier utilisateur peut créer un compte</li>
+                        <li>Une fois créé, l'inscription sera fermée</li>
+                        <li>Vous aurez accès à toutes les fonctionnalités admin</li>
+                        <li>Conservez vos identifiants en sécurité</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 15px;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+}
+
+.form-control:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.btn-success {
+    background: linear-gradient(45deg, #28a745, #20c997);
+    border: none;
+    border-radius: 10px;
+}
+
+.btn-success:hover {
+    background: linear-gradient(45deg, #218838, #1e7e34);
+    transform: translateY(-1px);
+}
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+#password, #confirm_password {
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23dc3545'><path d='M8 1a2 2 0 012 2v4H6V3a2 2 0 012-2zM6 7a2 2 0 00-2 2v6a2 2 0 002 2h4a2 2 0 002-2V9a2 2 0 00-2-2H6z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+}
+</style>
+
+<script>
+// Password confirmation validation
+document.getElementById('confirm_password').addEventListener('input', function() {
+    const password = document.getElementById('password').value;
+    const confirmPassword = this.value;
+    
+    if (password !== confirmPassword) {
+        this.setCustomValidity('Les mots de passe ne correspondent pas');
+        this.classList.add('is-invalid');
+    } else {
+        this.setCustomValidity('');
+        this.classList.remove('is-invalid');
+        this.classList.add('is-valid');
+    }
+});
+
+document.getElementById('password').addEventListener('input', function() {
+    const confirmPassword = document.getElementById('confirm_password');
+    if (confirmPassword.value) {
+        confirmPassword.dispatchEvent(new Event('input'));
+    }
+});
+</script>
+{% endblock %}

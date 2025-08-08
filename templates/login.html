@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Connexion - DealSnap Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg mt-5">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-lock me-2"></i>Connexion Admin
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{% if category == 'error' %}danger{% elif category == 'success' %}success{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">
+                                <i class="fas fa-user me-2"></i>Nom d'utilisateur
+                            </label>
+                            <input type="text" class="form-control" id="username" name="username" required 
+                                   placeholder="Entrez votre nom d'utilisateur" autofocus>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-key me-2"></i>Mot de passe
+                            </label>
+                            <input type="password" class="form-control" id="password" name="password" required 
+                                   placeholder="Entrez votre mot de passe">
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+                            <label class="form-check-label" for="remember_me">
+                                Se souvenir de moi
+                            </label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Se connecter
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <small class="text-muted">
+                            Première connexion ? 
+                            <a href="{{ url_for('register') }}" class="text-primary">Créer un compte</a>
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer text-center text-muted">
+                    <small>
+                        <i class="fas fa-shield-alt me-1"></i>
+                        Accès sécurisé au tableau de bord DealSnap
+                    </small>
+                </div>
+            </div>
+
+            <!-- Info Card -->
+            <div class="card mt-4">
+                <div class="card-body text-center">
+                    <h6 class="card-title">
+                        <i class="fas fa-info-circle me-2 text-info"></i>
+                        Informations de connexion
+                    </h6>
+                    <p class="card-text small text-muted">
+                        L'interface d'administration vous permet de gérer vos deals, 
+                        visualiser les analytics et optimiser vos revenus passifs.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 15px;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    border: none;
+    border-radius: 10px;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, #0056b3, #004085);
+    transform: translateY(-1px);
+}
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+</style>
+{% endblock %}

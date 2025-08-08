@@ -1,6 +1,7 @@
-from flask import render_template, request, jsonify, redirect, url_for, flash
+from flask import render_template, request, jsonify, redirect, url_for, flash, session
+from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
-from models import Deal, ClickEvent
+from models import Deal, ClickEvent, User
 from deal_service import DealService
 from ai_service import AIService
 from scraper_service import ScraperService
@@ -105,7 +106,99 @@ def click_deal(deal_id):
     </html>
     """
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Login page"""
+    if current_user.is_authenticated:
+        return redirect(url_for('admin'))
+    
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        remember_me = request.form.get('remember_me') == 'on'
+        
+        if not username or not password:
+            flash('Veuillez remplir tous les champs', 'error')
+            return render_template('login.html')
+        
+        # Find user
+        user = User.query.filter_by(username=username).first()
+        
+        if user and user.check_password(password):
+            # Update last login
+            user.last_login = datetime.utcnow()
+            db.session.commit()
+            
+            # Login user
+            login_user(user, remember=remember_me)
+            flash(f'Bienvenue {user.username}!', 'success')
+            
+            # Redirect to next page or admin
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('admin'))
+        else:
+            flash('Nom d\'utilisateur ou mot de passe incorrect', 'error')
+    
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    """Logout user"""
+    logout_user()
+    flash('Vous avez été déconnecté avec succès', 'info')
+    return redirect(url_for('login'))
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    """Register new admin user"""
+    # Check if any users exist
+    if User.query.first():
+        flash('L\'inscription est fermée', 'error')
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        
+        # Validation
+        if not all([username, email, password, confirm_password]):
+            flash('Veuillez remplir tous les champs', 'error')
+            return render_template('register.html')
+        
+        if password != confirm_password:
+            flash('Les mots de passe ne correspondent pas', 'error')
+            return render_template('register.html')
+        
+        if len(password) < 6:
+            flash('Le mot de passe doit contenir au moins 6 caractères', 'error')
+            return render_template('register.html')
+        
+        # Check if user exists
+        if User.query.filter_by(username=username).first():
+            flash('Ce nom d\'utilisateur existe déjà', 'error')
+            return render_template('register.html')
+        
+        if User.query.filter_by(email=email).first():
+            flash('Cette adresse e-mail est déjà utilisée', 'error')
+            return render_template('register.html')
+        
+        # Create user
+        user = User(username=username, email=email)
+        user.set_password(password)
+        
+        db.session.add(user)
+        db.session.commit()
+        
+        flash('Compte créé avec succès! Vous pouvez maintenant vous connecter.', 'success')
+        return redirect(url_for('login'))
+    
+    return render_template('register.html')
+
 @app.route('/admin')
+@login_required
 def admin():
     """Admin dashboard for managing deals"""
     deals = Deal.query.order_by(Deal.created_at.desc()).all()
@@ -127,6 +220,7 @@ def admin():
     return render_template('admin.html', deals=deals, analytics=analytics)
 
 @app.route('/admin/generate-sample-deals')
+@login_required
 def generate_sample_deals():
     """Generate sample deals with AI headlines"""
     try:
@@ -139,6 +233,7 @@ def generate_sample_deals():
     return redirect(url_for('admin'))
 
 @app.route('/admin/regenerate-headlines')
+@login_required
 def regenerate_headlines():
     """Regenerate AI headlines for all deals"""
     try:
@@ -161,6 +256,7 @@ def regenerate_headlines():
     return redirect(url_for('admin'))
 
 @app.route('/admin/scrape-deal', methods=['POST'])
+@login_required
 def scrape_deal():
     """Add a deal by scraping from URL"""
     url = request.form.get('url')
@@ -183,6 +279,7 @@ def scrape_deal():
     return redirect(url_for('admin'))
 
 @app.route('/admin/add-deal', methods=['GET', 'POST'])
+@login_required
 def add_deal():
     """Add deal manually"""
     if request.method == 'GET':
