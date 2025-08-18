@@ -178,6 +178,7 @@
                                     <th>CTR</th>
                                     <th>Status</th>
                                     <th>Created</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -227,6 +228,11 @@
                                     </td>
                                     <td>
                                         <small>{{ deal.created_at.strftime('%m/%d/%Y') }}</small>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('edit_deal', deal_id=deal.id) }}" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i> Modifier
+                                        </a>
                                     </td>
                                 </tr>
                                 {% endfor %}
