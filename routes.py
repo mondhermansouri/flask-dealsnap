@@ -7,10 +7,14 @@ from ai_service import AIService
 from scraper_service import ScraperService
 from datetime import datetime
 import logging
+from flask import Blueprint, jsonify, request
+from models import db, Deal
+
 
 deal_service = DealService()
 ai_service = AIService()
 scraper_service = ScraperService()
+routes = Blueprint("routes", __name__)
 
 @app.route('/')
 def index():
@@ -56,7 +60,55 @@ def deal_detail(deal_id):
 def click_deal(deal_id):
     """Track click and redirect to affiliate URL"""
     deal = Deal.query.get_or_404(deal_id)
+    # --- GET deals ---
+    @routes.route("/deals", methods=["GET"])
+    def get_deals():
+        deals = Deal.query.all()
+        return jsonify([{
+            "id": d.id,
+            "title": d.title,
+            "price": d.price,
+            "link": d.link,
+            "timestamp": d.timestamp
+        } for d in deals])
     
+    # --- ADD deal ---
+    @routes.route("/deals", methods=["POST"])
+    def add_deal():
+        data = request.json
+        new_deal = Deal(
+            title=data.get("title"),
+            price=data.get("price"),
+            link=data.get("link")
+        )
+        db.session.add(new_deal)
+        db.session.commit()
+        return jsonify({"message": "Deal added successfully!"}), 201
+    
+    # --- UPDATE deal ---
+    @routes.route("/deals/<int:deal_id>", methods=["PUT", "PATCH"])
+    def update_deal(deal_id):
+        deal = Deal.query.get_or_404(deal_id)
+        data = request.json
+    
+        if "title" in data:
+            deal.title = data["title"]
+        if "price" in data:
+            deal.price = data["price"]
+        if "link" in data:
+            deal.link = data["link"]
+    
+        db.session.commit()
+        return jsonify({"message": "Deal updated successfully!"})
+    
+    # --- DELETE deal ---
+    @routes.route("/deals/<int:deal_id>", methods=["DELETE"])
+    def delete_deal(deal_id):
+        deal = Deal.query.get_or_404(deal_id)
+        db.session.delete(deal)
+        db.session.commit()
+        return jsonify({"message": "Deal deleted successfully!"})
+        
     # Track click event
     click_event = ClickEvent(
         deal_id=deal.id,
