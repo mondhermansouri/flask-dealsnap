@@ -85,30 +85,32 @@ def click_deal(deal_id):
         db.session.commit()
         return jsonify({"message": "Deal added successfully!"}), 201
     
-    # --- UPDATE deal ---
-    @routes.route("/deals/<int:deal_id>", methods=["PUT", "PATCH"])
-    def update_deal(deal_id):
-        deal = Deal.query.get_or_404(deal_id)
-        data = request.json
-    
-        if "title" in data:
-            deal.title = data["title"]
-        if "price" in data:
-            deal.price = data["price"]
-        if "link" in data:
-            deal.link = data["link"]
-    
-        db.session.commit()
-        return jsonify({"message": "Deal updated successfully!"})
-    
-    # --- DELETE deal ---
-    @routes.route("/deals/<int:deal_id>", methods=["DELETE"])
-    def delete_deal(deal_id):
-        deal = Deal.query.get_or_404(deal_id)
-        db.session.delete(deal)
-        db.session.commit()
-        return jsonify({"message": "Deal deleted successfully!"})
+   # éditer un deal
+        @routes.route("/edit/<int:deal_id>", methods=["GET", "POST"])
+        def edit_deal(deal_id):
+            deal = Deal.query.get_or_404(deal_id)
         
+            if request.method == "POST":
+                deal.title = request.form["title"]
+                deal.description = request.form["description"]
+                deal.price = request.form["price"]
+                deal.link = request.form["link"]
+        
+                db.session.commit()
+                flash("Deal mis à jour avec succès !", "success")
+                return redirect(url_for("routes.admin_dashboard"))
+        
+            return render_template("edit_deal.html", deal=deal)
+        
+        # supprimer un deal
+        @routes.route("/delete/<int:deal_id>", methods=["POST"])
+        def delete_deal(deal_id):
+            deal = Deal.query.get_or_404(deal_id)
+            db.session.delete(deal)
+            db.session.commit()
+            flash("Deal supprimé avec succès !", "danger")
+            return redirect(url_for("routes.admin_dashboard"))
+
     # Track click event
     click_event = ClickEvent(
         deal_id=deal.id,
