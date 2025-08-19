@@ -85,22 +85,20 @@ def click_deal(deal_id):
         db.session.commit()
         return jsonify({"message": "Deal added successfully!"}), 201
     
-   # éditer un deal
-        @routes.route("/edit/<int:deal_id>", methods=["GET", "POST"])
-        def edit_deal(deal_id):
-            deal = Deal.query.get_or_404(deal_id)
-        
-            if request.method == "POST":
-                deal.title = request.form["title"]
-                deal.description = request.form["description"]
-                deal.price = request.form["price"]
-                deal.link = request.form["link"]
-        
-                db.session.commit()
-                flash("Deal mis à jour avec succès !", "success")
-                return redirect(url_for("routes.admin_dashboard"))
-        
-            return render_template("edit_deal.html", deal=deal)
+   @app.route('/edit/<int:deal_id>', methods=['GET', 'POST'])
+   def edit_deal(deal_id):
+       deal = Deal.query.get_or_404(deal_id)
+   
+       if request.method == 'POST':
+           deal.title = request.form['title']
+           deal.price = request.form['price']
+           deal.category = request.form['category']
+           db.session.commit()
+           flash("Deal updated successfully!", "success")
+           return redirect(url_for('admin'))
+   
+       return render_template('edit_deal.html', deal=deal)
+   
         
         # supprimer un deal
         @routes.route("/delete/<int:deal_id>", methods=["POST"])
